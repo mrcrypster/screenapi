@@ -4,7 +4,7 @@ API to take screenshots of webpages.
 ## Usage
 Usage is as simple as:
 
-```
+```bash
 curl "https://screenapi.cc/400x800/github.com" -o screen.png
                            ^   ^        ^
                        width   height   url ("domain/path?query-string" format supported)
