@@ -11,7 +11,7 @@ curl "https://screenapi.cc/400x800/github.com" -o screen.png
 ```
 
 ## Examples
-```
+```bash
 # https://github.com
 # 400x800 resolution
 curl "https://screenapi.cc/400x800/github.com" -o screen.png
