@@ -13,7 +13,10 @@ $r->subscribe(['queue'], function($r, $c, $m) {
   @mkdir(dirname($path), 0777, true);
   
   $size = implode(',', $data['size']);
-  exec('google-chrome --headless --screenshot="' . $path . '" -window-size=' . $size . ' "' . $data['url'] . '"');
+  exec('google-chrome --headless --user-agen="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"'.
+      ' --user-data-dir=/var/www/.config/google-chrome --screenshot="' .
+      $path . '" -window-size=' . $size . ' "' . $data['url'] . '"');
+      
   # exec('optipng -o3 "' . $path .  '"');
   
   echo ' ' . (time() - $ts) . "s\n";

@@ -1,6 +1,18 @@
 <?php
 
 if ( $_SERVER['REQUEST_URI'] != '/' ) {
+  if ( strpos($_SERVER['REQUEST_URI'], '/archive') === 0 ) {
+    return include 'archive.phtml';
+  }
+  else if ( $_SERVER['REQUEST_URI'] == '/sitemap.xml' ) {
+    return include 'sitemap.php';
+  }
+  else if ( $_SERVER['REQUEST_URI'] == '/how.png' ) {
+    header('Content-type: image/png');
+    header('Expires: ' . gmdate("D, d M Y H:i:s", time() + 60*60*24*30*12) . " GMT");
+    return include 'how.png';
+  }
+  
   $uri = $_SERVER['REQUEST_URI'];
   $size = [1280, 720];
   if ( preg_match('/^\/([0-9]+x[0-9]+)(\/.+)/', $uri, $m) ) {

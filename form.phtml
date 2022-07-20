@@ -9,16 +9,51 @@
     input.u { width: 300px; text-align: left; }
     button { vertical-align: middle; background: #444; color: #eee; border: none; border-radius: 13px; padding: 11px 15px; cursor: pointer; border-top-left-radius: 0; border-bottom-left-radius: 0; }
     button:hover { background: #333; }
+    button:active { padding: 12px 15px 10px 15px; }
+    
+    p { margin-top: 20px; }
+    
+    #how { display: block; margin: 0 auto; }
+    
+    @media (max-width: 860px) {
+      button { display: block; border-radius: 13px; margin: 20px auto 0 auto; }
+      .a { border-radius: 12px; }
+      #how { display: none; }
+    }
+    
+    @media (max-width: 730px) {
+      span { display: none; }
+    }
+    
+    @media (max-width: 540px) {
+      .a { background: none; }
+      input { background: #F7F7F7; border-radius: 12px; border: none; }
+      input.u { display: block; margin: 20px auto 0 auto; }
+    }
+    
+    .foot a { margin: 0 5px; }
   </style>
   <body>
     <h1>API to take screenshots of webpages</h1>
     <form>
       <div class="a">
-        https://screenapi.cc/
+        <span>https://screenapi.cc/</span>
+        
+        
         <input type="text" name="width" value="1280" /> x
-        <input type="text" name="height" value="720" /> /
+        <input type="text" name="height" value="720" />
+        
+        <span>/</span>
         <input type="text" name="url" placeholder="URL..." class="u" />
       </div><button>Take Screenshot</button>
     </form>
+    
+    <img id="how" src="/how.png"/>
+    
+    <p class="foot">
+      <a href="/archive">www archive</a>
+      <a target="_blank" href="https://github.com/mrcrypster/screenapi">git repo</a>
+      <a target="_blank" href="https://github.com/mrcrypster/screenapi/blob/main/README.md">docs</a>
+    </p>
   </body>
 </html>

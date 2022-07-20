@@ -1,0 +1,114 @@
+<?php
+
+$root = '/var/www/archive/';
+
+$total_screens = trim(shell_exec('ls /var/www/archive/* | wc -l'));
+
+$uri = trim(parse_url($_SERVER['REQUEST_URI'])['path'], '/');
+if ( $uri != 'archive' ) {
+  list($root_uri, $archive_path) = explode('/', $uri);
+  $info = json_decode(file_get_contents('/var/www/archive/' . $archive_path . '/.info'), true);
+  $date = date('Y-m-d', $_GET['dt'] ? strtotime($_GET['dt']) : time());
+  $thumb = '/archive/' . basename($archive_path) . '/' . date('Y_m_d', strtotime($date)) . '.png';
+  if ( !is_file('/var/www' . $thumb) ) {
+    $thumb = null;
+  }
+  
+  $text = '/var/www/archive/' . basename($archive_path) . '/' . date('Y_m_d', strtotime($date)) . '.txt';
+  
+  $from = date('Y-m-d', strtotime($date . ' -5 days'));
+  $to = date('Y-m-d', strtotime($date . ' +5 days'));
+  
+  $dates = [];
+  for ( $i = 0; $i < 11; $i++ ) {
+    $d = date('Y-m-d', strtotime($from . ' +' . $i . ' days'));
+    $t = '/archive/' . basename($archive_path) . '/' . date('Y_m_d', strtotime($d)) . '.png';
+    $dates[$d] = is_file('/var/www' . $t);
+  }
+}
+
+?>
+
+<html>
+  <head>
+    <?php if ( $uri == 'archive' ) { ?>
+      <title>Public Screenshots Archive - ScreenAPI</title>
+    <?php } else { ?>
+      <title><?=$info['url']?> screenshot on <?=$date?> - ScreenAPI</title>
+    <?php } ?>
+  </head>
+  <style>
+    body { font-family: monospace; font-size: 12px; text-align: center; padding: 0; margin: 0; border: 0; }
+    h1 { font-weight: normal; font-size: 40px; margin: 20px; }
+    ul { list-style: none; margin: 20px 20px 0 20px; padding: 0; }
+    ul li { display: inline-block; margin: 0 40px 40px 0; }
+    ul li:last-child { margin-right: 0; }
+    ul li a { display: block; }
+    ul li a img { width: 200px; display: block; margin: 0 0 20px 0; }
+    img#big { display: block; width: 100%; box-sizing: border-box; margin: 60px 0; }
+    .foot { padding: 20px; }
+    .foot a { margin: 0 5px; }
+    #no { font-size: 64px; margin: 128px 0; color: #eee; }
+    ol { list-style: none; margin: 40px 20px 0 20px; padding: 0; }
+    ol li { display: inline-block; }
+    ol li a { display: block; padding: 5px 10px; }
+    ol li a.no { pointer-events: none; color: #aaa; text-decoration: none; }
+    ol li a.on { text-decoration: none; font-weight: bold; pointer-events: none; color: #000;
+                 border: 1px solid #ddd; background: #eee; border-radius: 4px;  }
+                 
+    blockquote { max-width: 1000px; padding: 0 0 0 20px; text-align: left; line-height: 150%;
+                 border-left: 5px solid #eee; }
+  </style>
+  <body>
+    <?php if ( $uri == 'archive' ) { ?>
+      <h1>Screenshots Archive</h1>
+      <p>This is an archive of certain www websites (list is growing) to show how web is chaning over time.</p>
+      <p>We have collected <?=$total_screens?> web screenshots so far.</p>
+      <ul>
+        <?php foreach ( glob($root . '*') as $dir ) {
+          $info = json_decode(file_get_contents($dir . '/.info'), true);
+          $thumb = '/archive/' . basename($dir) . '/' . date('Y_m_d') . '.png';
+          ?>
+          <li>
+            <a href="/archive/<?=basename($dir)?>">
+              <img src="<?=$thumb?>"/>
+              <?=$info['url']?>
+            </a>
+          </li>
+        <?php } ?>
+      </ul>
+    <?php } else if ( $archive_path ) { ?>
+      <h1><?=$info['url']?> / screenshot on <?=$date?></h1>
+      <ol>
+        <?php foreach ( $dates as $d => $has_screen ) { ?>
+          <li><a href="/archive/<?=$archive_path?>?dt=<?=$d?>" class="<?=!$has_screen ? 'no' : ''?> <?=$d == $date ? 'on' : ''?>"><?=$d?></a></li>
+        <?php } ?>
+      </ol>
+      
+      <?php if ( $thumb ) { ?>
+        <img id="big" src="<?=$thumb?>"/>
+        <?php if ( is_file($text) ) { ?>
+          <h2>Cached <?=$info['url']?> content - <?=$date?></h2>
+          <?php
+          $text = file_get_contents($text);
+          $text = preg_replace('/\n\s+\n/misu', "\n", $text);
+          $len = mb_strlen($text);
+          $text = mb_substr($text, 0, round(0.5 * $len));
+          ?>
+          <blockquote><?=nl2br($text)?></blockquote>
+        <?php } ?>
+      <?php } else { ?>
+        <p id="no">No screenshot availalbe here :(</p>
+      <?php } ?>
+    <?php } ?>
+    
+    
+    <p class="foot">
+      <?php if ( $uri != 'archive' ) { ?>
+        <a href="/archive">All Archived Websites</a>
+      <?php } ?>
+      
+      <a href="/">Screenshot API</a>
+    </p>
+  </body>
+</html>
